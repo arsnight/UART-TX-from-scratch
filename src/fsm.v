@@ -1,4 +1,4 @@
-module FSM(
+module fsm(
     input clk,
     input [7:0] data_stored,
     input tick,
@@ -16,33 +16,32 @@ module FSM(
     localparam STOP_BIT = 3;
     
     
-    always @(posedge clk) begin
-        
-        
-        if (start_tx == 1'b1) begin
-            
-        if (tick) begin
-            if (state == IDLE) begin
-                serial_out <= 1;
-            end
-            else if (state == START_BIT) begin
-                    state <= DATA_BITS; //data_bit
-                    if (tick) begin 
-                        serial_out <= 0;
-                    end
-            end
-            else if (state == DATA_BITS) begin
-                counter <= counter + 1'b1;
-                serial_out <= data_stored[counter];
-                if (counter == 3'b111) begin
-                        state <= STOP_BIT; //stop_bit
-                        counter <= 3'b0;
-                end
-             end
-             else if (state == STOP_BIT) begin
-                    state <= IDLE;
+    always @(posedge clk) begin                
+            if (tick) begin
+                if (state == IDLE) begin
                     serial_out <= 1;
-             end
-         end
-     end                           
+                    if (start_tx == 1'b1) begin
+                        state <= START_BIT;
+                    end
+                end
+                else if (state == START_BIT) begin
+                        state <= DATA_BITS;
+                        counter <= 0;
+                        serial_out <= 0;
+                end
+                else if (state == DATA_BITS) begin
+                    serial_out <= data_stored[counter];
+                    counter <= counter + 1'b1;
+                    if (counter == 3'b111) begin
+                            state <= STOP_BIT;
+                    end
+                end
+                else if (state == STOP_BIT) begin
+                        state <= IDLE;
+                        counter <= 3'b000;
+                        serial_out <= 1;
+                end
+                end
+            end                        
 endmodule
+    
