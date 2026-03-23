@@ -1,26 +1,26 @@
-module fsm(
+module uart_tx_fsm(
     input clk,
     input [7:0] data_stored,
     input tick,
-    input start_tx,
+    input edge_detect,
     output reg serial_out
     );
     
     
-    reg [3:0] state;
-    reg [3:0] counter;
+    reg [3:0] state = 0;
+    reg [3:0] counter = 0;
+    
     
     localparam IDLE = 0;
     localparam START_BIT = 1;
     localparam DATA_BITS = 2;
     localparam STOP_BIT = 3;
     
-    
     always @(posedge clk) begin                
             if (tick) begin
                 if (state == IDLE) begin
                     serial_out <= 1;
-                    if (start_tx == 1'b1) begin
+                    if (edge_detect) begin
                         state <= START_BIT;
                     end
                 end
@@ -38,10 +38,9 @@ module fsm(
                 end
                 else if (state == STOP_BIT) begin
                         state <= IDLE;
-                        counter <= 3'b000;
+                        counter <= 0;
                         serial_out <= 1;
                 end
                 end
             end                        
 endmodule
-    
