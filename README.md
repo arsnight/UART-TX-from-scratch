@@ -65,7 +65,7 @@ Now that issue was solved, the next time is to create the backbone of this proje
 
 - For the standard baud tick, Baud rate = 115200 bits/s
 - Each bit will last for around 1/115200 seconds or 8.68us
-- Fundamental time period of clock on FPGA = 10ns
+- Assuming a 100 MHz FPGA clock, fundamental time period of on board clock = 10ns
 - So, if 1 cycle takes 10ns, then 8.68us/10ns cycles take 8.68us.
 
 By simple arthmetic, each baud tick will last for exactly 868 on board clock ticks. Hence the code logic is simple, initialize a counter that adds each time it isn't equal to 10'd867 (counter starts at 0, so total counts will be from 0 to 867) and reset it once it reaches 10'd867.
