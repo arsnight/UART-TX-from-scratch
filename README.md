@@ -61,7 +61,7 @@ module Input_storage (
   end
 endmodule
 ```
-Now that issue was solved, the next time is to create the backbone of this project, `The Baud tick generator`. As complicated as it sounds, the code was rather simple. For this project I went with the most common baud rate of 115200:
+Now that this issue was resolved, the next part was to create the backbone of this project, `The Baud tick generator`. As complicated as it sounds, the code was rather simple. For this project I went with the most common baud rate of 115200:
 
 - For the standard baud tick, Baud rate = 115200 bits/s
 - Each bit will last for around 1/115200 seconds or 8.68us
