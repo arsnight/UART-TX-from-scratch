@@ -6,6 +6,7 @@ module uart_tx_fsm(
     output reg serial_out
     );
     
+    initial serial_out = 1;
     
     reg [3:0] state = 0;
     reg [3:0] counter = 0;
@@ -16,7 +17,7 @@ module uart_tx_fsm(
     localparam DATA_BITS = 2;
     localparam STOP_BIT = 3;
     
-    always @(posedge clk) begin                
+    always @(posedge clk) begin            
             if (tick) begin
                 if (state == IDLE) begin
                     serial_out <= 1;
@@ -32,7 +33,7 @@ module uart_tx_fsm(
                 else if (state == DATA_BITS) begin
                     serial_out <= data_stored[counter];
                     counter <= counter + 1'b1;
-                    if (counter == 3'b111) begin
+                    if (counter == 4'd7) begin
                             state <= STOP_BIT;
                     end
                 end
