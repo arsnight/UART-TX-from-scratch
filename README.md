@@ -88,4 +88,9 @@ module baud_rate_gen(
 endmodule
 ```
 This tick signal now acts as the timing reference for the UART FSM, ensuring each bit is transmitted at the correct baud rate.
-But do note, `the baud tick is not another clock. It is dangerous to use it directly in the always @ statement. Always use one universal clock for all modules within the project`.
+However, it is important to note that the baud tick is **not another clock**. 
+Using it directly in an `always @(posedge tick)` block is dangerous and can 
+lead to timing issues.
+
+Instead, a single global clock should be used throughout the design, while 
+the baud tick is used as a **clock enable** signal:
