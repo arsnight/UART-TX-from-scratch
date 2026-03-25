@@ -7,24 +7,27 @@ module UART_TX(
     output serial_out
     );
 
+
     reg [7:0] data_stored;
-    reg prev_state;
+    reg prev_state = 0;
     reg edge_detect = 0;
+    reg edge_detect_d = 0;
+    wire tick;
     
     always @(posedge clk) begin
-        if (prev_state == 1'b0 && start_tx == 1'b1) begin
+        edge_detect_d <= edge_detect;
+        if (prev_state == 0 && start_tx == 1) begin
             data_stored <= parallel_in;
             edge_detect <= 1;
         end
         
-        else begin
+        else if(edge_detect_d && tick) begin
             edge_detect <= 0;
         end
                 
         prev_state <= start_tx;
     end
-    
-    wire tick;    
+      
     baud_rate_gen baud_rate(
         .clk(clk),
         .tick(tick)
