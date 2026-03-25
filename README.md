@@ -76,7 +76,7 @@ module baud_rate_gen(
 );
   reg [9:0] count = 0;
   always @(posedge clk) begin
-    if (count == 10'867) begin
+    if (count == 10'd867) begin
       tick <= 1'b1;
       count <= 0;
     end
