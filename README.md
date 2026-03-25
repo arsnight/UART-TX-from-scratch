@@ -29,4 +29,36 @@ module Input_storage (
 endmodule
 
 Looks correct right? No.
-The thing is, this code forces data_stored to update every clock cycle. Imagine a data coming like A....B....C and so on. By this code, the data_stored will update continuously every clock cycle forcing maybe half of A, quarter of B, a bit from C and so on. This is just gibberish. What 
+The thing is, this code forces data_stored to update every clock cycle.
+For example, imagine transmitting:
+
+A → B → C
+
+If `data_stored` updates continuously, the transmitter may output:
+
+- First few bits from A
+- Then some bits from B
+- Then remaining bits from C
+
+Absolutely corrupted UART frame, essentially just a gibberish output. This was my first major realization in shifting from software thinking to hardware thinking — signals must often be *latched* at the right time rather than continuously updated.
+
+To solve this I used a trigger, an edge detection logic instead. Introducing a reg start_tx along with another reg prev_state, while using this logic -
+
+module Input_storage (
+  input clk,
+  input reset,
+  input start_tx,
+  input [7:0] parallel_in,
+  output reg [7:0] data_stored
+  );
+
+  reg prev_state = 0;  //------> Don't forget to initialize, a good habit!
+```verilog  
+  always @(posedge clk or posedge reset) begin
+    if (prev_state == 0 && start_tx == 1) begin
+      data_stored <= parallel_in;
+    end
+      prev_state <= start_tx;
+  end
+```
+endmodule
