@@ -61,3 +61,29 @@ module Input_storage (
   end
 endmodule
 ```
+Now that issue was solved, the next time is to create the backbone of this project, `The Baud tick generator`. As complicated as it sounds, the code was rather simple. For this project I went with the most common baud rate of 115200 -
+
+For the standard baud tick, Baud rate = 115200 bits/s
+Each bit will last for around 1/115200 seconds or 8.68us
+Fundamental time period of clock on FPGA = 10ns
+So, if 1 cycle takes 10ns, then 8.68us/10ns cycles take 8.68us.
+
+By simple arthmetic, each baud tick will last for exactly 868 on board clock ticks. Hence the code logic is simple, initialize a counter that adds each time it isn't equal to 10'd867 (counter starts at 0, so total counts will be from 0 to 867) and reset it once it reaches 10'd867.
+```verilog
+module baud_rate_gen(
+  input clk,
+  output reg tick
+);
+  reg [9:0] count = 0;
+  always @(posedge clk) begin
+    if (count == 10'867) begin
+      tick <= 1'b1;
+      count <= 0;
+    end
+    else begin
+      count <= count + 1'b1;
+      tick <= 0;
+    end
+  end
+endmodule
+```
