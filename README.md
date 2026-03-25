@@ -11,7 +11,7 @@ As a beginner to the field of verilog, a lot in this project was just me switchi
 The first step in this project was to assume the input data is going to be received to the tx (transmitter) module in parallel form. This usually just meant instead of bit by bit input, the inputs will be a collection of bits instead (better called bytes). Example for the alphabet A, the parallel input would be 01000001. Hence, we need to store this data somewhere because if we use it raw, data can change and then the tx module will just output a bunch of gibberish.
 
 This is where I got my first roadblock, I started thinking in terms of software, making codes like - 
-
+```verilog  
 module Input_storage (
   input clk,
   input reset,
@@ -27,7 +27,7 @@ module Input_storage (
     end
   end
 endmodule
-
+```
 Looks correct right? No.
 The thing is, this code forces data_stored to update every clock cycle.
 For example, imagine transmitting:
@@ -43,7 +43,7 @@ If `data_stored` updates continuously, the transmitter may output:
 Absolutely corrupted UART frame, essentially just a gibberish output. This was my first major realization in shifting from software thinking to hardware thinking — signals must often be *latched* at the right time rather than continuously updated.
 
 To solve this I used a trigger, an edge detection logic instead. Introducing a reg start_tx along with another reg prev_state, while using this logic -
-
+```verilog  
 module Input_storage (
   input clk,
   input reset,
@@ -53,12 +53,11 @@ module Input_storage (
   );
 
   reg prev_state = 0;  //------> Don't forget to initialize, a good habit!
-```verilog  
   always @(posedge clk or posedge reset) begin
     if (prev_state == 0 && start_tx == 1) begin
       data_stored <= parallel_in;
     end
       prev_state <= start_tx;
   end
-```
 endmodule
+```
