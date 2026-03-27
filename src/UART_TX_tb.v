@@ -15,7 +15,7 @@ UART_TX dut(
 );
 
 initial begin
-    parallel_in = 8'h43;
+    parallel_in = 8'h43; //Test for alphabet C
     #100
     start_tx = 1; 
     #100
